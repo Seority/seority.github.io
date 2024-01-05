@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   {% include head.html %}
+   <title>{{ page.title }}</title>
+</head>
+<body>
+   <style>
+      .grid-container {
+         display: grid;
+         grid-template-rows: 200px 1fr 100px; /* 각 행의 크기 지정 */
+         grid-template-columns: 300px 1fr 1fr; /* 각 열의 크기 지정 */
+         height: 100vh; /* 화면 높이 전체를 차지 */
+      }
+      .contents {
+         grid-column: 2 / 3; /* 2번부터 3번 열까지 */
+         grid-row: 2; /* 2번 행 */
+         background-color: lightgreen;
+      }
+   </style>
+
+   <main>
+      <div class="grid-container">
+         {% include nav.html %}
+          <div class="contents">
+            Contents 5, 6
+            {{ content }}
+         </div>
+         {% include foot.html %}
+      </div>
+   </main>
+</body>
+</html>
