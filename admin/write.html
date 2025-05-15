@@ -1,37 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>글쓰기</title>
+  <meta charset="UTF-8">
+  <title>Seority CMS - 글쓰기</title>
 </head>
 <body>
-  <h1>글쓰기</h1>
-  <input id="title" placeholder="제목"><br>
+  <h1>✍️ 글쓰기 CMS</h1>
+  <button onclick="signInWithGitHub()">🔐 GitHub 로그인</button>
+
+  <hr>
+
+  <input type="text" id="title" placeholder="제목"><br>
   <textarea id="body" placeholder="내용" rows="10" cols="50"></textarea><br>
-  <input id="date" type="date"><br>
-  <button onclick="postToGitHub()">작성</button>
+  <input type="date" id="date"><br>
+  <button onclick="submitPost()">📤 작성하기</button>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 
   <script>
-    async function postToGitHub() {
-      const title = document.getElementById('title').value;
-      const body = document.getElementById('body').value;
-      const date = document.getElementById('date').value;
-      const token = localStorage.getItem('github_token');
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const provider = new firebase.auth.GithubAuthProvider();
+
+    function signInWithGitHub() {
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+          const token = result.credential.accessToken;
+          const user = result.user;
+          localStorage.setItem("github_token", token);
+          alert(`${user.displayName}님 로그인 완료!`);
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("로그인 실패: " + error.message);
+        });
+    }
+
+    async function submitPost() {
+      const title = document.getElementById("title").value;
+      const body = document.getElementById("body").value;
+      const date = document.getElementById("date").value;
+      const token = localStorage.getItem("github_token");
 
       if (!token) {
-        alert("로그인이 필요합니다.");
-        return window.location.href = `https://github.com/login/oauth/authorize?client_id=0v231iwViVnR0fNLki39&scope=repo`;
+        return alert("로그인이 필요합니다.");
       }
 
-      const filename = `${date}-${title.replace(/\s+/g, '-')}.md`;
-      const content = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
-      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+      const fileName = `${date}-${title.replace(/\s+/g, "-")}.md`;
+      const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
+      const encodedContent = btoa(unescape(encodeURIComponent(markdown)));
 
-      const res = await fetch("https://api.github.com/repos/Seority/seority.github.io/contents/_posts/" + filename, {
+      const res = await fetch(`https://api.github.com/repos/Seority/seority.github.io/contents/_posts/${fileName}`, {
         method: "PUT",
         headers: {
-          "Authorization": `token ${token}`,
-          "Content-Type": "application/json"
+          Authorization: `token ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: "블로그 글 작성",
@@ -42,10 +70,11 @@
 
       const data = await res.json();
       if (res.ok) {
-        alert("작성 완료!");
+        alert("✅ 글 작성 완료!");
         console.log(data);
       } else {
-        alert("에러: " + data.message);
+        alert("❌ 오류: " + data.message);
+        console.error(data);
       }
     }
   </script>
