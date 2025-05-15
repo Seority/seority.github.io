@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>글쓰기</title>
+</head>
+<body>
+  <h1>글쓰기</h1>
+  <input id="title" placeholder="제목"><br>
+  <textarea id="body" placeholder="내용" rows="10" cols="50"></textarea><br>
+  <input id="date" type="date"><br>
+  <button onclick="postToGitHub()">작성</button>
+
+  <script>
+    async function postToGitHub() {
+      const title = document.getElementById('title').value;
+      const body = document.getElementById('body').value;
+      const date = document.getElementById('date').value;
+      const token = localStorage.getItem('github_token');
+
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return window.location.href = `https://github.com/login/oauth/authorize?client_id=0v231iwViVnR0fNLki39&scope=repo`;
+      }
+
+      const filename = `${date}-${title.replace(/\s+/g, '-')}.md`;
+      const content = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
+      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
+      const res = await fetch("https://api.github.com/repos/Seority/seority.github.io/contents/_posts/" + filename, {
+        method: "PUT",
+        headers: {
+          "Authorization": `token ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "블로그 글 작성",
+          content: encodedContent,
+          branch: "main"
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("작성 완료!");
+        console.log(data);
+      } else {
+        alert("에러: " + data.message);
+      }
+    }
+  </script>
+</body>
+</html>
