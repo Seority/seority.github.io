@@ -20,11 +20,15 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 
   <script>
+
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
+      authDomain: "seority-cms.firebaseapp.com",
+      projectId: "seority-cms"
     };
+  
     firebase.initializeApp(firebaseConfig);
+    
     const provider = new firebase.auth.GithubAuthProvider();
 
     function signInWithGitHub() {
@@ -78,5 +82,6 @@
       }
     }
   </script>
+  
 </body>
 </html>
