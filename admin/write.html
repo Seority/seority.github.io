@@ -7,25 +7,15 @@
   <!-- Toast UI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 
-  <!-- jQuery, Firebase, Toast UI -->
+  <!-- highlight.js + atom-one-dark -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- jQuery, Firebase, Toast UI Editor -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-  <!-- Prism 테마 -->
-  <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-
-  <!-- Prism Core -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  
-  <!-- 필요한 언어 플러그인만 추가 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-swift.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-kotlin.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 
   <style>
     body {
@@ -79,7 +69,7 @@
 
   <script>
     $(document).ready(function () {
-      // 기본 오늘 날짜
+      // 기본 오늘 날짜 설정
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
@@ -92,7 +82,7 @@
       firebase.initializeApp(firebaseConfig);
       const provider = new firebase.auth.GithubAuthProvider();
 
-      // 로그인
+      // GitHub 로그인
       $("#login").on("click", async () => {
         try {
           const result = await firebase.auth().signInWithPopup(provider);
@@ -106,7 +96,7 @@
         }
       });
 
-      // Toast UI Editor 초기화 (주의: el은 순수 DOM 요소 필요)
+      // Toast UI Editor 초기화
       const editor = new toastui.Editor({
         el: $("#editor")[0],
         height: '500px',
@@ -114,12 +104,13 @@
         previewStyle: 'vertical',
         placeholder: '내용을 입력하세요...',
       });
-      
+
+      // 실시간 미리보기 하이라이트 적용
       editor.on('change', () => {
-        Prism.highlightAll(); // ✅ 이게 정석입니다!
+        hljs.highlightAll();
       });
 
-      // 글쓰기 처리
+      // 글 작성
       $("#submit").on("click", async () => {
         const title = $("#title").val();
         const date = $("#date").val();
@@ -154,7 +145,6 @@
         }
       });
     });
-    
   </script>
 </body>
 </html>
