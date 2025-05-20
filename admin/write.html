@@ -63,6 +63,17 @@
 
     <h2>작성일</h2>
     <input type="date" id="date" />
+    
+    <!-- 버튼 UI (본문 아무 곳에든 넣기) -->
+    <div style="margin-top: 30px;">
+      <h3>💡 하이라이트 테마 변경</h3>
+      <button onclick="switchTheme('github-dark-dimmed')">GitHub Dark Dimmed</button>
+      <button onclick="switchTheme('atom-one-dark')">Atom One Dark</button>
+      <button onclick="switchTheme('night-owl')">Night Owl</button>
+    </div>
+    
+    <!-- 기본 테마 -->
+    <link id="hljs-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
 
     <button id="submit">📤 작성하기</button>
   </div>
@@ -145,6 +156,23 @@
         }
       });
     });
+    
+    // 테마 이름 → CDN 링크 매핑
+    const themeMap = {
+      "github-dark-dimmed": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css",
+      "atom-one-dark": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css",
+      "night-owl": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css"
+    };
+  
+    // 테마 전환 함수
+    function switchTheme(themeName) {
+      const themeUrl = themeMap[themeName];
+      if (themeUrl) {
+        document.getElementById("hljs-theme").href = themeUrl;
+      } else {
+        alert("해당 테마가 존재하지 않습니다!");
+      }
+    }
   </script>
 </body>
 </html>
