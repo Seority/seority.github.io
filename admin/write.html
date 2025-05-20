@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <title>Seority CMS - 글쓰기</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
-  <!-- EasyMDE 툴바용 Font Awesome 4.7 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-  <!-- jQuery + Firebase SDK (compat) + EasyMDE + marked -->
+
+  <!-- Toast UI Editor CSS -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+  <!-- jQuery, Firebase, Toast UI -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -19,25 +20,11 @@
       background: #f4f4f4;
     }
     .container {
-      display: flex;
-      height: 100vh;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
     }
-    .editor, .preview {
-      flex: 1;
-      padding: 30px;
-      box-sizing: border-box;
-      overflow-y: auto;
-      background: white;
-    }
-    .editor {
-      border-right: 1px solid #ccc;
-    }
-    .preview {
-      background-color: #fefefe;
-    }
-    input[type="text"],
-    input[type="date"],
-    button {
+    input[type="text"], input[type="date"], button {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
@@ -56,91 +43,69 @@
       background-color: #444;
     }
     h2 {
-      margin-top: 20px;
+      margin-top: 30px;
     }
-    /* 툴바 아이콘 안 보일 때 강제 수리용 */
-    .fa {
-      font-family: FontAwesome !important;
-      font-style: normal !important;
-      font-weight: normal !important;
-      font-size: 16px !important;
-      line-height: 1 !important;
-      text-rendering: auto !important;
-      display: inline-block !important;
-    }
-
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="editor">
-      <button id="login">🔐 GitHub 로그인</button>
-      <h2>제목</h2>
-      <input type="text" id="title" placeholder="제목"><br>
-      <h2>내용</h2>
-      <textarea id="editor"></textarea><br>
-      <h2>작성일</h2>
-      <input type="date" id="date"><br>
-      <button id="submit">📤 작성하기</button>
-    </div>
-    <div class="preview">
-      <h2>미리보기</h2>
-      <div id="preview-content"></div>
-    </div>
+    <button id="login">🔐 GitHub 로그인</button>
+
+    <h2>제목</h2>
+    <input type="text" id="title" placeholder="제목" />
+
+    <h2>내용</h2>
+    <div id="editor"></div>
+
+    <h2>작성일</h2>
+    <input type="date" id="date" />
+
+    <button id="submit">📤 작성하기</button>
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
-      authDomain: "seority-cms.firebaseapp.com",
-      projectId: "seority-cms"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GithubAuthProvider();
-
     $(document).ready(function () {
-      // 날짜 기본값 설정
+      // 기본 오늘 날짜
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
-      // EasyMDE 초기화
-      const easyMDE = new EasyMDE({
-        element: document.getElementById("editor"),
-        spellChecker: false,
-        placeholder: "내용을 마크다운 형식으로 입력하세요...",
-        toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "link", "preview"],
-      });
+      // Firebase 초기화
+      const firebaseConfig = {
+        apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
+        authDomain: "seority-cms.firebaseapp.com",
+        projectId: "seority-cms"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const provider = new firebase.auth.GithubAuthProvider();
 
-      // 미리보기 갱신
-      function updatePreview() {
-        const title = $("#title").val();
-        const markdown = easyMDE.value();
-        $("#preview-content").html(`<h1>${title}</h1>` + marked.parse(markdown));
-      }
-
-      $("#title").on("input", updatePreview);
-      easyMDE.codemirror.on("change", updatePreview);
-
-      // GitHub 로그인
+      // 로그인
       $("#login").on("click", async () => {
         try {
-          const result = await auth.signInWithPopup(provider);
+          const result = await firebase.auth().signInWithPopup(provider);
           const token = result.credential.accessToken;
           const user = result.user;
           localStorage.setItem("github_token", token);
-          alert(`${user.displayName}님 로그인 완료!`);
+          alert(`${user.displayName}님 로그인 성공!`);
         } catch (err) {
           alert("❌ 로그인 실패: " + err.message);
           console.error(err);
         }
       });
 
-      // 글 작성
+      // Toast UI Editor 초기화 (주의: el은 순수 DOM 요소 필요)
+      const editor = new toastui.Editor({
+        el: $("#editor")[0],
+        height: '500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        placeholder: '내용을 입력하세요...',
+      });
+
+      // 글쓰기 처리
       $("#submit").on("click", async () => {
         const title = $("#title").val();
         const date = $("#date").val();
-        const body = easyMDE.value();
+        const body = editor.getMarkdown();
         const token = localStorage.getItem("github_token");
 
         if (!token) return alert("로그인이 필요합니다.");
