@@ -53,18 +53,18 @@
       margin-right: 10px;
     }
     .toastui-editor-contents pre code.hljs {
-      display: block;
-      overflow-x: auto;
+      all: initial;
+      font-family: Consolas, Monaco, 'Andale Mono', monospace !important;
+      font-size: 0.95em !important;
+      line-height: 1.5 !important;
       padding: 1em;
       border-radius: 4px;
+      white-space: pre;
+    }
     
-      /* 테마에서 지정한 색상은 그대로 살림 */
-      background-color: inherit;
-      color: inherit;
-    
-      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-      font-size: 0.95em;
-      line-height: 1.5;
+    .toastui-editor-contents pre code.hljs span {
+      all: unset;
+      display: inline;
     }
 
   </style>
