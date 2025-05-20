@@ -114,6 +114,10 @@
         previewStyle: 'vertical',
         placeholder: '내용을 입력하세요...',
       });
+      
+      editor.on('change', () => {
+        Prism.highlightAll(); // ✅ 이게 정석입니다!
+      });
 
       // 글쓰기 처리
       $("#submit").on("click", async () => {
@@ -150,6 +154,7 @@
         }
       });
     });
+    
   </script>
 </body>
 </html>
