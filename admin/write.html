@@ -1,60 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>Seority CMS - 글쓰기</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .editor, .preview {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    .editor { border-right: 1px solid #ccc; }
+    .preview { background: #f9f9f9; }
+    input, button { margin-top: 10px; }
+  </style>
 </head>
 <body>
-  <h1>✍️ 글쓰기 CMS</h1>
-  <button onclick="signInWithGitHub()">🔐 GitHub 로그인</button>
+  <div class="container">
+    <div class="editor">
+      <h2>제목</h2>
+      <input type="text" id="title" placeholder="제목" style="width: 100%;"><br>
+      <h2>내용</h2>
+      <textarea id="editor"></textarea><br>
+      <h2>작성일</h2>
+      <input type="date" id="date"><br>
+      <button id="submit">📤 작성하기</button>
+    </div>
+    <div class="preview">
+      <h2>미리보기</h2>
+      <div id="preview-content"></div>
+    </div>
+  </div>
 
-  <hr>
-
-  <input type="text" id="title" placeholder="제목"><br>
-  <textarea id="body" placeholder="내용" rows="10" cols="50"></textarea><br>
-  <input type="date" id="date"><br>
-  <button onclick="submitPost()">📤 작성하기</button>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <!-- 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <script>
+    const easyMDE = new EasyMDE({
+      element: document.getElementById('editor'),
+      spellChecker: false,
+      placeholder: "여기에 글을 작성하세요...",
+    });
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
-      authDomain: "seority-cms.firebaseapp.com",
-      projectId: "seority-cms"
-    };
-  
-    firebase.initializeApp(firebaseConfig);
-    
-    const provider = new firebase.auth.GithubAuthProvider();
+    // 실시간 미리보기
+    easyMDE.codemirror.on("change", () => {
+      const md = easyMDE.value();
+      document.getElementById('preview-content').innerHTML = marked.parse(md);
+    });
 
-    function signInWithGitHub() {
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => {
-          const token = result.credential.accessToken;
-          const user = result.user;
-          localStorage.setItem("github_token", token);
-          alert(`${user.displayName}님 로그인 완료!`);
-        })
-        .catch((error) => {
-          console.error(error);
-          alert("로그인 실패: " + error.message);
-        });
-    }
-
-    async function submitPost() {
-      const title = document.getElementById("title").value;
-      const body = document.getElementById("body").value;
-      const date = document.getElementById("date").value;
+    document.getElementById('submit').addEventListener('click', async () => {
+      const title = document.getElementById('title').value;
+      const date = document.getElementById('date').value;
+      const body = easyMDE.value();
       const token = localStorage.getItem("github_token");
 
-      if (!token) {
-        return alert("로그인이 필요합니다.");
-      }
-
+      if (!token) return alert("로그인이 필요합니다.");
       const fileName = `${date}-${title.replace(/\s+/g, "-")}.md`;
       const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
       const encodedContent = btoa(unescape(encodeURIComponent(markdown)));
@@ -75,13 +82,11 @@
       const data = await res.json();
       if (res.ok) {
         alert("✅ 글 작성 완료!");
-        console.log(data);
       } else {
         alert("❌ 오류: " + data.message);
         console.error(data);
       }
-    }
+    });
   </script>
-  
 </body>
 </html>
