@@ -87,73 +87,80 @@
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
 
-    // 로그인
-    document.getElementById("login").addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const token = result.credential.accessToken;
-        const user = result.user;
-        localStorage.setItem("github_token", token);
-        alert(`${user.displayName}님 로그인 성공!`);
-      } catch (err) {
-        alert("❌ 로그인 실패: " + err.message);
-        console.error(err);
-      }
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+      // 날짜 기본값 오늘로
+      const dateInput = document.getElementById("date");
+      const today = new Date().toISOString().split("T")[0];
+      dateInput.value = today;
 
-    // 에디터 초기화
-    const easyMDE = new EasyMDE({
-      element: document.getElementById("editor"),
-      spellChecker: false,
-      placeholder: "내용을 마크다운 형식으로 입력하세요...",
-      toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "link", "preview"],
-    });
-    
-    // 실시간 미리보기: 제목 + 본문
-    const previewArea = document.getElementById("preview-content");
-    const titleInput = document.getElementById("title");
-    
-    function updatePreview() {
-      const title = titleInput.value;
-      const markdown = easyMDE.value();
-      previewArea.innerHTML = `<h1>${title}</h1>` + marked(markdown);
-    }
-    
-    easyMDE.codemirror.on("change", updatePreview);
-    titleInput.addEventListener("input", updatePreview);
-
-    // 글 작성 (GitHub에 커밋)
-    document.getElementById("submit").addEventListener("click", async () => {
-      const title = document.getElementById("title").value;
-      const date = document.getElementById("date").value;
-      const body = easyMDE.value();
-      const token = localStorage.getItem("github_token");
-
-      if (!token) return alert("로그인이 필요합니다.");
-      const fileName = `${date}-${title.replace(/\s+/g, "-")}.md`;
-      const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
-      const encodedContent = btoa(unescape(encodeURIComponent(markdown)));
-
-      const res = await fetch(`https://api.github.com/repos/Seority/seority.github.io/contents/_posts/${fileName}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: "블로그 글 작성",
-          content: encodedContent,
-          branch: "main"
-        })
+      // 에디터 초기화
+      const easyMDE = new EasyMDE({
+        element: document.getElementById("editor"),
+        spellChecker: false,
+        placeholder: "내용을 마크다운 형식으로 입력하세요...",
+        toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "link", "preview"],
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("✅ 글 작성 완료!");
-      } else {
-        alert("❌ 오류: " + data.message);
-        console.error(data);
+      // 미리보기 동작
+      const previewArea = document.getElementById("preview-content");
+      const titleInput = document.getElementById("title");
+
+      function updatePreview() {
+        const title = titleInput.value;
+        const markdown = easyMDE.value();
+        previewArea.innerHTML = `<h1>${title}</h1>` + marked(markdown);
       }
+
+      easyMDE.codemirror.on("change", updatePreview);
+      titleInput.addEventListener("input", updatePreview);
+
+      // 로그인 처리
+      document.getElementById("login").addEventListener("click", async () => {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const token = result.credential.accessToken;
+          const user = result.user;
+          localStorage.setItem("github_token", token);
+          alert(`${user.displayName}님 로그인 성공!`);
+        } catch (err) {
+          alert("❌ 로그인 실패: " + err.message);
+          console.error(err);
+        }
+      });
+
+      // 글 작성 (GitHub API)
+      document.getElementById("submit").addEventListener("click", async () => {
+        const title = titleInput.value;
+        const date = dateInput.value;
+        const body = easyMDE.value();
+        const token = localStorage.getItem("github_token");
+
+        if (!token) return alert("로그인이 필요합니다.");
+        const fileName = `${date}-${title.replace(/\s+/g, "-")}.md`;
+        const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
+        const encodedContent = btoa(unescape(encodeURIComponent(markdown)));
+
+        const res = await fetch(`https://api.github.com/repos/Seority/seority.github.io/contents/_posts/${fileName}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: "블로그 글 작성",
+            content: encodedContent,
+            branch: "main"
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert("✅ 글 작성 완료!");
+        } else {
+          alert("❌ 오류: " + data.message);
+          console.error(data);
+        }
+      });
     });
   </script>
 </body>
