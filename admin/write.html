@@ -52,6 +52,22 @@
     .theme-button {
       margin-right: 10px;
     }
+    
+    /* 하이라이트 전체 공통 강제 적용 */
+    .toastui-editor-contents pre code.hljs {
+      all: unset;
+      display: block;
+      overflow-x: auto;
+      padding: 1em;
+      border-radius: 4px;
+    
+      /* 강제로 테마 스타일만 따르도록 */
+      background-color: inherit !important;
+      color: inherit !important;
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
