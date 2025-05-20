@@ -70,30 +70,29 @@
     </div>
   </div>
 
-  <!-- Firebase + EasyMDE + marked -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import EasyMDE from "https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.mjs";
-    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+  <!-- jQuery + Firebase SDK (compat) + EasyMDE + marked -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    // Firebase 설정
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
       authDomain: "seority-cms.firebaseapp.com",
       projectId: "seority-cms"
     };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GithubAuthProvider();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GithubAuthProvider();
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // 날짜 기본값 오늘로
-      const dateInput = document.getElementById("date");
+    $(document).ready(function () {
+      // 날짜 기본값 설정
       const today = new Date().toISOString().split("T")[0];
-      dateInput.value = today;
+      $("#date").val(today);
 
-      // 에디터 초기화
+      // EasyMDE 초기화
       const easyMDE = new EasyMDE({
         element: document.getElementById("editor"),
         spellChecker: false,
@@ -101,41 +100,39 @@
         toolbar: ["bold", "italic", "heading", "|", "unordered-list", "ordered-list", "link", "preview"],
       });
 
-      // 미리보기 동작
-      const previewArea = document.getElementById("preview-content");
-      const titleInput = document.getElementById("title");
-
+      // 미리보기 갱신
       function updatePreview() {
-        const title = titleInput.value;
+        const title = $("#title").val();
         const markdown = easyMDE.value();
-        previewArea.innerHTML = `<h1>${title}</h1>` + marked(markdown);
+        $("#preview-content").html(`<h1>${title}</h1>` + marked.parse(markdown));
       }
 
+      $("#title").on("input", updatePreview);
       easyMDE.codemirror.on("change", updatePreview);
-      titleInput.addEventListener("input", updatePreview);
 
-      // 로그인 처리
-      document.getElementById("login").addEventListener("click", async () => {
+      // GitHub 로그인
+      $("#login").on("click", async () => {
         try {
-          const result = await signInWithPopup(auth, provider);
+          const result = await auth.signInWithPopup(provider);
           const token = result.credential.accessToken;
           const user = result.user;
           localStorage.setItem("github_token", token);
-          alert(`${user.displayName}님 로그인 성공!`);
+          alert(`${user.displayName}님 로그인 완료!`);
         } catch (err) {
           alert("❌ 로그인 실패: " + err.message);
           console.error(err);
         }
       });
 
-      // 글 작성 (GitHub API)
-      document.getElementById("submit").addEventListener("click", async () => {
-        const title = titleInput.value;
-        const date = dateInput.value;
+      // 글 작성
+      $("#submit").on("click", async () => {
+        const title = $("#title").val();
+        const date = $("#date").val();
         const body = easyMDE.value();
         const token = localStorage.getItem("github_token");
 
         if (!token) return alert("로그인이 필요합니다.");
+
         const fileName = `${date}-${title.replace(/\s+/g, "-")}.md`;
         const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
         const encodedContent = btoa(unescape(encodeURIComponent(markdown)));
