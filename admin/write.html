@@ -52,20 +52,22 @@
     .theme-button {
       margin-right: 10px;
     }
+    /* 코드 블록 전체 스타일 조정 */
     .toastui-editor-contents pre code.hljs {
-      all: initial;
-      font-family: Consolas, Monaco, 'Andale Mono', monospace !important;
-      font-size: 0.95em !important;
-      line-height: 1.5 !important;
+      background-color: inherit !important;
+      color: inherit !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
       padding: 1em;
       border-radius: 4px;
       white-space: pre;
     }
     
+    /* highlight.js 내부 span 배경색 제거 */
     .toastui-editor-contents pre code.hljs span {
-      all: unset;
-      display: inline;
+      background-color: transparent !important;
     }
+
 
   </style>
 </head>
