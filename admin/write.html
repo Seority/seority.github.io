@@ -7,11 +7,11 @@
   <!-- Toast UI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 
-  <!-- highlight.js 테마 -->
+  <!-- highlight.js 기본 테마 -->
   <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-  <!-- jQuery, Firebase, Toast UI Editor -->
+  <!-- highlight.js + jQuery + Firebase + Toast UI Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -46,29 +46,26 @@
     button:hover {
       background-color: #444;
     }
-    h2 {
+    h2, h3 {
       margin-top: 30px;
     }
-    .theme-button {
-      margin-right: 10px;
-    }
-    /* 코드 블록 전체 스타일 조정 */
+
+    /* 하이라이트 공통 스타일 */
     .toastui-editor-contents pre code.hljs {
-      background-color: inherit !important;
-      color: inherit !important;
-      font-size: inherit !important;
-      font-family: inherit !important;
+      display: block;
       padding: 1em;
       border-radius: 4px;
       white-space: pre;
+      background-color: #282c34 !important;
+      color: #abb2bf !important;
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+      font-size: 0.95em !important;
+      line-height: 1.5 !important;
     }
-    
-    /* highlight.js 내부 span 배경색 제거 */
+
     .toastui-editor-contents pre code.hljs span {
       background-color: transparent !important;
     }
-
-
   </style>
 </head>
 <body>
@@ -84,11 +81,10 @@
     <h2>작성일</h2>
     <input type="date" id="date" />
 
-    <!-- 테마 전환 버튼 -->
     <h3>💡 하이라이트 테마 변경</h3>
-    <button class="theme-button" data-theme="atom-one-dark">Atom One Dark</button>
-    <button class="theme-button" data-theme="github-dark-dimmed">GitHub Dark Dimmed</button>
-    <button class="theme-button" data-theme="night-owl">Night Owl</button>
+    <button onclick="switchTheme('atom-one-dark')">Atom One Dark</button>
+    <button onclick="switchTheme('github-dark-dimmed')">GitHub Dark Dimmed</button>
+    <button onclick="switchTheme('night-owl')">Night Owl</button>
 
     <button id="submit">📤 작성하기</button>
   </div>
@@ -98,7 +94,6 @@
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
-      // Firebase 설정
       const firebaseConfig = {
         apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
         authDomain: "seority-cms.firebaseapp.com",
@@ -107,7 +102,6 @@
       firebase.initializeApp(firebaseConfig);
       const provider = new firebase.auth.GithubAuthProvider();
 
-      // GitHub 로그인
       $("#login").on("click", async () => {
         try {
           const result = await firebase.auth().signInWithPopup(provider);
@@ -121,7 +115,6 @@
         }
       });
 
-      // 에디터 초기화
       const editor = new toastui.Editor({
         el: $("#editor")[0],
         height: '500px',
@@ -130,12 +123,10 @@
         placeholder: '내용을 입력하세요...',
       });
 
-      // 코드 하이라이팅
       editor.on('change', () => {
-        setTimeout(() => hljs.highlightAll(), 50);
+        hljs.highlightAll();
       });
 
-      // 글 작성 처리
       $("#submit").on("click", async () => {
         const title = $("#title").val();
         const date = $("#date").val();
@@ -169,21 +160,24 @@
           console.error(data);
         }
       });
-
-      // 테마 변경 처리
-      const themes = {
-        "atom-one-dark": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css",
-        "github-dark-dimmed": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css",
-        "night-owl": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css"
-      };
-
-      $(".theme-button").on("click", function () {
-        const selectedTheme = $(this).data("theme");
-        $("#highlight-theme").attr("href", themes[selectedTheme]);
-
-        setTimeout(() => hljs.highlightAll(), 50);
-      });
     });
+
+    // 테마 전환 함수
+    function switchTheme(theme) {
+      const urls = {
+        'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
+        'github-dark-dimmed': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css',
+        'night-owl': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css'
+      };
+      const bg = {
+        'atom-one-dark': '#282c34',
+        'github-dark-dimmed': '#22272e',
+        'night-owl': '#011627'
+      };
+      $('#highlight-theme').attr('href', urls[theme]);
+      $('.toastui-editor-contents pre code.hljs').css('background-color', bg[theme]);
+      setTimeout(() => hljs.highlightAll(), 100);
+    }
   </script>
 </body>
 </html>
