@@ -7,8 +7,8 @@
   <!-- Toast UI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 
-  <!-- highlight.js + atom-one-dark -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <!-- highlight.js 테마 -->
+  <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <!-- jQuery, Firebase, Toast UI Editor -->
@@ -49,6 +49,9 @@
     h2 {
       margin-top: 30px;
     }
+    .theme-button {
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
@@ -63,28 +66,22 @@
 
     <h2>작성일</h2>
     <input type="date" id="date" />
-    
-    <!-- 버튼 UI (본문 아무 곳에든 넣기) -->
-    <div style="margin-top: 30px;">
-      <h3>💡 하이라이트 테마 변경</h3>
-      <button onclick="switchTheme('github-dark-dimmed')">GitHub Dark Dimmed</button>
-      <button onclick="switchTheme('atom-one-dark')">Atom One Dark</button>
-      <button onclick="switchTheme('night-owl')">Night Owl</button>
-    </div>
-    
-    <!-- 기본 테마 -->
-    <link id="hljs-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+
+    <!-- 테마 전환 버튼 -->
+    <h3>💡 하이라이트 테마 변경</h3>
+    <button class="theme-button" data-theme="atom-one-dark">Atom One Dark</button>
+    <button class="theme-button" data-theme="github-dark-dimmed">GitHub Dark Dimmed</button>
+    <button class="theme-button" data-theme="night-owl">Night Owl</button>
 
     <button id="submit">📤 작성하기</button>
   </div>
 
   <script>
     $(document).ready(function () {
-      // 기본 오늘 날짜 설정
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
-      // Firebase 초기화
+      // Firebase 설정
       const firebaseConfig = {
         apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
         authDomain: "seority-cms.firebaseapp.com",
@@ -107,7 +104,7 @@
         }
       });
 
-      // Toast UI Editor 초기화
+      // 에디터 초기화
       const editor = new toastui.Editor({
         el: $("#editor")[0],
         height: '500px',
@@ -116,12 +113,12 @@
         placeholder: '내용을 입력하세요...',
       });
 
-      // 실시간 미리보기 하이라이트 적용
+      // 코드 하이라이팅
       editor.on('change', () => {
-        hljs.highlightAll();
+        setTimeout(() => hljs.highlightAll(), 50);
       });
 
-      // 글 작성
+      // 글 작성 처리
       $("#submit").on("click", async () => {
         const title = $("#title").val();
         const date = $("#date").val();
@@ -155,24 +152,21 @@
           console.error(data);
         }
       });
+
+      // 테마 변경 처리
+      const themes = {
+        "atom-one-dark": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css",
+        "github-dark-dimmed": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css",
+        "night-owl": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css"
+      };
+
+      $(".theme-button").on("click", function () {
+        const selectedTheme = $(this).data("theme");
+        $("#highlight-theme").attr("href", themes[selectedTheme]);
+
+        setTimeout(() => hljs.highlightAll(), 50);
+      });
     });
-    
-    // 테마 이름 → CDN 링크 매핑
-    const themeMap = {
-      "github-dark-dimmed": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css",
-      "atom-one-dark": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css",
-      "night-owl": "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css"
-    };
-  
-    // 테마 전환 함수
-    function switchTheme(themeName) {
-      const themeUrl = themeMap[themeName];
-      if (themeUrl) {
-        document.getElementById("hljs-theme").href = themeUrl;
-      } else {
-        alert("해당 테마가 존재하지 않습니다!");
-      }
-    }
   </script>
 </body>
 </html>
