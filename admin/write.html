@@ -10,11 +10,9 @@
   <!-- highlight.js 기본 테마 -->
   <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 
-  <!-- highlight.js + jQuery + Firebase + Toast UI Editor -->
+  <!-- highlight.js + jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
   <style>
@@ -49,8 +47,6 @@
     h2, h3 {
       margin-top: 30px;
     }
-
-    /* 하이라이트 공통 스타일 */
     .toastui-editor-contents pre code.hljs {
       display: block;
       padding: 1em;
@@ -62,7 +58,6 @@
       font-size: 0.95em !important;
       line-height: 1.5 !important;
     }
-
     .toastui-editor-contents pre code.hljs span {
       background-color: transparent !important;
     }
@@ -89,22 +84,46 @@
     <button id="submit">📤 작성하기</button>
   </div>
 
-  <script>
+  <!-- Firebase 모듈 기반 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
+      authDomain: "seority-cms.firebaseapp.com",
+      projectId: "seority-cms"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GithubAuthProvider();
+
+    let editor; // 전역 선언
+
     $(document).ready(function () {
+      // 오늘 날짜 설정
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
-        authDomain: "seority-cms.firebaseapp.com",
-        projectId: "seority-cms"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const provider = new firebase.auth.GithubAuthProvider();
+      // Toast UI Editor 초기화
+      editor = new toastui.Editor({
+        el: $("#editor")[0],
+        height: '500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        placeholder: '내용을 입력하세요...'
+      });
 
-      $("#login").on("click", async () => {
+      // 내용 바뀔 때마다 코드 하이라이트 적용
+      editor.on('change', () => {
+        hljs.highlightAll();
+      });
+
+      // GitHub 로그인 처리
+      $("#login").on("click", async function () {
         try {
-          const result = await firebase.auth().signInWithPopup(provider);
+          const result = await signInWithPopup(auth, provider);
           const token = result.credential.accessToken;
           const user = result.user;
           localStorage.setItem("github_token", token);
@@ -115,19 +134,8 @@
         }
       });
 
-      const editor = new toastui.Editor({
-        el: $("#editor")[0],
-        height: '500px',
-        initialEditType: 'markdown',
-        previewStyle: 'vertical',
-        placeholder: '내용을 입력하세요...',
-      });
-
-      editor.on('change', () => {
-        hljs.highlightAll();
-      });
-
-      $("#submit").on("click", async () => {
+      // 게시 처리
+      $("#submit").on("click", async function () {
         const title = $("#title").val();
         const date = $("#date").val();
         const body = editor.getMarkdown();
@@ -162,8 +170,8 @@
       });
     });
 
-    // 테마 전환 함수
-    function switchTheme(theme) {
+    // 테마 전환 함수 (전역 등록)
+    window.switchTheme = function (theme) {
       const urls = {
         'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
         'github-dark-dimmed': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css',
@@ -174,10 +182,11 @@
         'github-dark-dimmed': '#22272e',
         'night-owl': '#011627'
       };
-      $('#highlight-theme').attr('href', urls[theme]);
-      $('.toastui-editor-contents pre code.hljs').css('background-color', bg[theme]);
+
+      $("#highlight-theme").attr("href", urls[theme]);
+      $(".toastui-editor-contents pre code.hljs").css("background-color", bg[theme]);
       setTimeout(() => hljs.highlightAll(), 100);
-    }
+    };
   </script>
 </body>
 </html>
