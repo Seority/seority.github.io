@@ -1,6 +1,11 @@
 <aside>
     <div class="logo">메인이미지</div>
     <div class="category-list" id="category-list">
-        <!-- JS로 카테고리 동적 삽입 -->
+        {% assign categories = site.posts | map: 'category' | uniq | sort %}
+        {% for category in categories %}
+            <div class="category-item">
+                <a href="/categories/{{ category | downcase | url_encode }}/">{{ category }}</a>
+            </div>
+        {% endfor %}
     </div>
 </aside>
