@@ -86,27 +86,31 @@
 
   <!-- Firebase 모듈 기반 -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+    import { getAuth, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyADzni3RHctYp3juQq0czd05i5tti9ehMY",
+      apiKey: "AIzaSyADzni3RHctYp3juQqOczd05i5tti9ehMY",
       authDomain: "seority-cms.firebaseapp.com",
-      projectId: "seority-cms"
+      projectId: "seority-cms",
+      storageBucket: "seority-cms.firebasestorage.app",
+      messagingSenderId: "821461314543",
+      appId: "1:821461314543:web:98b6730dce8f025181241a",
+      measurementId: "G-LVF6ZYMCZQ"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
 
-    let editor; // 전역 선언
+    let editor;
 
     $(document).ready(function () {
-      // 오늘 날짜 설정
+      // 오늘 날짜 자동 입력
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
-      // Toast UI Editor 초기화
+      // 에디터 초기화
       editor = new toastui.Editor({
         el: $("#editor")[0],
         height: '500px',
@@ -115,12 +119,9 @@
         placeholder: '내용을 입력하세요...'
       });
 
-      // 내용 바뀔 때마다 코드 하이라이트 적용
-      editor.on('change', () => {
-        hljs.highlightAll();
-      });
+      editor.on('change', () => hljs.highlightAll());
 
-      // GitHub 로그인 처리
+      // 로그인 처리
       $("#login").on("click", async function () {
         try {
           const result = await signInWithPopup(auth, provider);
@@ -134,7 +135,7 @@
         }
       });
 
-      // 게시 처리
+      // 글 작성 처리
       $("#submit").on("click", async function () {
         const title = $("#title").val();
         const date = $("#date").val();
@@ -170,7 +171,7 @@
       });
     });
 
-    // 테마 전환 함수 (전역 등록)
+    // 전역 테마 전환 함수
     window.switchTheme = function (theme) {
       const urls = {
         'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
@@ -182,7 +183,6 @@
         'github-dark-dimmed': '#22272e',
         'night-owl': '#011627'
       };
-
       $("#highlight-theme").attr("href", urls[theme]);
       $(".toastui-editor-contents pre code.hljs").css("background-color", bg[theme]);
       setTimeout(() => hljs.highlightAll(), 100);
