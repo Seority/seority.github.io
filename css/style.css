@@ -11,13 +11,6 @@ body {
     flex-direction: row; /* PC에서는 가로 정렬 */
 }
 
-aside {
-    width: 250px;
-    background: #f4f4f4;
-    padding: 20px;
-    border-right: 1px solid #ccc;
-}
-
 .main-content {
     flex: 1;
     padding: 20px;
