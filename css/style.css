@@ -31,53 +31,6 @@ body {
     cursor: pointer;
 }
 
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    aside.sidebar {
-        width: 100% !important;
-        height: auto !important;
-        flex-direction: row !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 10px 20px !important;
-        border-right: none !important;
-        border-bottom: 1px solid #ccc !important;
-    }
-
-    .sidebar-image {
-        margin-bottom: 0;
-    }
-
-    .sidebar-image img {
-        max-width: 60px;
-    }
-    
-    .category-list {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 15px;
-        margin: 0;
-        width: auto; /* ← 이거 중요: 가로로 줄어들도록! */
-        text-align: right; /* 또는 제거 */
-    }
-
-    .category-list h3 {
-        margin: 0;
-        font-size: 14px;
-        white-space: nowrap;
-    }
-
-    .category-item {
-        margin: 0;
-        white-space: nowrap;
-    }
-}
-
 /* 사이드바 전체 */
 .sidebar {
     width: 250px;
@@ -132,4 +85,51 @@ body {
 
 .category-item a:hover {
     color: #007bff;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    aside.sidebar {
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 20px !important;
+        border-right: none !important;
+        border-bottom: 1px solid #ccc !important;
+    }
+
+    .sidebar-image {
+        margin-bottom: 0;
+    }
+
+    .sidebar-image img {
+        max-width: 60px;
+    }
+    
+    .category-list {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 15px;
+        margin: 0;
+        width: auto; /* ← 이거 중요: 가로로 줄어들도록! */
+        text-align: right; /* 또는 제거 */
+    }
+
+    .category-list h3 {
+        margin: 0;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .category-item {
+        margin: 0;
+        white-space: nowrap;
+    }
 }
