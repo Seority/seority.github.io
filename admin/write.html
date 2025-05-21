@@ -167,7 +167,7 @@
         const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
         const encodedContent = btoa(unescape(encodeURIComponent(markdown)));
 
-        const res = await fetch(`https://api.github.com/repos/Seority/seority.github.io/contents/_posts/${fileName}`, {
+        const res = await fetch(`https://api.github.com/repos/seority/seority.github.io/contents/_posts/${fileName}`, {
           method: "PUT",
           headers: {
             Authorization: `token ${token}`,
