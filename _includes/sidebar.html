@@ -1,11 +1,14 @@
-<aside>
-    <div class="logo">메인이미지</div>
-    <div class="category-list" id="category-list">
-        {% assign categories = site.posts | map: 'category' | uniq | sort %}
+<aside class="sidebar">
+    <div class="sidebar-image">
+        <img src="/assets/images/logo.png" alt="메인 이미지">
+    </div>
+    <nav class="category-list">
+        <h3>카테고리</h3>
+        {% assign categories = site.posts | map: 'categories' | uniq | sort %}
         {% for category in categories %}
             <div class="category-item">
                 <a href="/categories/{{ category | downcase | url_encode }}/">{{ category }}</a>
             </div>
         {% endfor %}
-    </div>
+    </nav>
 </aside>
