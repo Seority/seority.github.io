@@ -65,7 +65,8 @@ body {
 /* 카테고리 리스트 */
 .category-list {
     width: 100%;
-    text-align: center;
+    text-align: left; /* ← 핵심! */
+    padding-left: 20px; /* ← 여유 있는 간격 조절 */
 }
 
 .category-list h3 {
