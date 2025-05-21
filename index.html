@@ -4,10 +4,12 @@ layout: default
 
 <h1>Seority 블로그</h1>
 <div id="post-list">로딩 중...</div>
+
 <h2>포스트 목록 테스트</h2>
 <ul>
   {% for post in site.posts %}
-    <li>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }} (카테고리: {{ post.category }})</li>
+    <li>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }} (카테고리: {{ post.categories }})</li>
   {% endfor %}
 </ul>
+
 <script src="/js/main.js"></script>
