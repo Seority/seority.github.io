@@ -116,10 +116,20 @@
       $("#login").on("click", async function () {
         try {
           const result = await signInWithPopup(auth, provider);
-          const token = result.credential.accessToken;
+          console.log("로그인 결과:", result);
+      
+          const credential = GithubAuthProvider.credentialFromResult(result);
+      
+          if (!credential) {
+            alert("❌ GitHub 인증 실패: credential이 없습니다.");
+            return;
+          }
+      
+          const token = credential.accessToken;
           localStorage.setItem("github_token", token);
           alert(`${result.user.displayName}님 로그인 성공!`);
         } catch (err) {
+          console.error("🔥 로그인 실패", err);
           alert("❌ 로그인 실패: " + err.message);
         }
       });
