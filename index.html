@@ -8,9 +8,18 @@ layout: default
 <h2>포스트 목록 테스트</h2>
 <ul>
   {% for post in site.posts %}
-    <li>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}<br>
-        카테고리: {% for c in post.categories %}{{ c }} {% endfor %}
+    <li>
+      {{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}<br>
+      카테고리:
+      {% if post.categories %}
+        {% for c in post.categories %}
+          <span>{{ c }}</span>
+        {% endfor %}
+      {% else %}
+        없음
+      {% endif %}
     </li>
   {% endfor %}
 </ul>
+
 <script src="/js/main.js"></script>
