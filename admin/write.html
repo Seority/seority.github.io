@@ -6,9 +6,7 @@
 
   <!-- Toast UI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-
-  <!-- highlight.js 기본 테마 -->
-  <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 
   <!-- highlight.js + jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -84,21 +82,20 @@
     <button id="submit">📤 작성하기</button>
   </div>
 
-  <!-- Firebase 모듈 기반 -->
+  <!-- Firebase 모듈 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
     import { getAuth, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyADzni3RHctYp3juQqOczd05i5tti9ehMY",
-      authDomain: "seority.github.io",
+      authDomain: "seority.github.io", // ✅ 팝업 인증용 도메인 (GitHub Pages)
       projectId: "seority-cms",
       storageBucket: "seority-cms.firebasestorage.app",
       messagingSenderId: "821461314543",
       appId: "1:821461314543:web:98b6730dce8f025181241a",
       measurementId: "G-LVF6ZYMCZQ"
     };
-
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -107,11 +104,9 @@
     let editor;
 
     $(document).ready(function () {
-      // 오늘 날짜 자동 입력
       const today = new Date().toISOString().split("T")[0];
       $("#date").val(today);
 
-      // 에디터 초기화
       editor = new toastui.Editor({
         el: $("#editor")[0],
         height: '500px',
@@ -122,11 +117,18 @@
 
       editor.on('change', () => hljs.highlightAll());
 
-      // 로그인 처리
+      // GitHub 로그인 (팝업 방식)
       $("#login").on("click", async function () {
         try {
           const result = await signInWithPopup(auth, provider);
-          const token = result.credential.accessToken;
+          const credential = GithubAuthProvider.credentialFromResult(result);
+
+          if (!credential) {
+            alert("❌ 인증 토큰을 가져올 수 없습니다.");
+            return;
+          }
+
+          const token = credential.accessToken;
           const user = result.user;
           localStorage.setItem("github_token", token);
           alert(`${user.displayName}님 로그인 성공!`);
@@ -136,7 +138,7 @@
         }
       });
 
-      // 글 작성 처리
+      // 게시하기
       $("#submit").on("click", async function () {
         const title = $("#title").val();
         const date = $("#date").val();
@@ -172,7 +174,7 @@
       });
     });
 
-    // 전역 테마 전환 함수
+    // 전역 테마 전환
     window.switchTheme = function (theme) {
       const urls = {
         'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
@@ -184,6 +186,7 @@
         'github-dark-dimmed': '#22272e',
         'night-owl': '#011627'
       };
+
       $("#highlight-theme").attr("href", urls[theme]);
       $(".toastui-editor-contents pre code.hljs").css("background-color", bg[theme]);
       setTimeout(() => hljs.highlightAll(), 100);
