@@ -4,21 +4,31 @@
   <meta charset="UTF-8" />
   <title>Seority CMS - 글쓰기</title>
 
-  <!-- Toast UI Editor -->
+  <!-- Toast UI Editor CSS -->
   <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-  <!-- Highlight.js -->
+
+  <!-- highlight.js 테마 -->
   <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+  <!-- highlight.js + jQuery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- Toast UI Editor -->
   <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
   <style>
     body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f4f4; }
     .container { max-width: 960px; margin: auto; padding: 20px; }
-    input, select, button { width: 100%; padding: 12px; margin-top: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
-    button { background-color: #24292e; color: white; font-weight: bold; cursor: pointer; }
+    input, select, button {
+      width: 100%; padding: 12px; margin-top: 10px;
+      font-size: 16px; border-radius: 6px; border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #24292e; color: white; font-weight: bold;
+      cursor: pointer;
+    }
     button:hover { background-color: #444; }
+
     .toastui-editor-contents pre code.hljs {
       background-color: #282c34 !important;
       color: #abb2bf !important;
@@ -66,14 +76,19 @@
     <button id="submit">📤 작성하기</button>
   </div>
 
+  <!-- Firebase SDK via Module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_FIREBASE_PROJECT.firebaseapp.com",
-      projectId: "YOUR_FIREBASE_PROJECT"
+      apiKey: "AIzaSyADzni3RHctYp3juQqOczd05i5tti9ehMY",
+      authDomain: "seority-cms.firebaseapp.com",
+      projectId: "seority-cms",
+      storageBucket: "seority-cms.firebasestorage.app",
+      messagingSenderId: "821461314543",
+      appId: "1:821461314543:web:98b6730dce8f025181241a",
+      measurementId: "G-LVF6ZYMCZQ"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -81,88 +96,83 @@
     const provider = new GithubAuthProvider();
     provider.addScope('repo');
 
-    document.querySelector("#login").addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const credential = GithubAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        localStorage.setItem("github_token", token);
-        alert(`${result.user.displayName}님 로그인 성공!`);
-      } catch (err) {
-        alert("❌ 로그인 실패: " + err.message);
-        console.error(err);
-      }
-    });
+    let editor;
 
-    const editor = new toastui.Editor({
-      el: document.querySelector("#editor"),
-      height: '500px',
-      initialEditType: 'markdown',
-      previewStyle: 'vertical',
-      placeholder: '내용을 입력하세요...'
-    });
+    $(document).ready(function () {
+      const today = new Date().toISOString().split("T")[0];
+      $("#date").val(today);
 
-    document.querySelector("#date").value = new Date().toISOString().split("T")[0];
-
-    document.querySelector("#submit").addEventListener("click", async () => {
-      const title = document.querySelector("#title").value.trim();
-      const date = document.querySelector("#date").value;
-      const category = document.querySelector("#category").value;
-      const tags = document.querySelector("#tags").value.trim().split(',').map(tag => tag.trim()).filter(Boolean);
-      const body = editor.getMarkdown();
-      const token = localStorage.getItem("github_token");
-
-      if (!token) return alert("❗ 먼저 로그인해주세요.");
-
-      const fileName = `${category}-${date}-${title.replace(/\s+/g, "-")}.md`;
-      const path = `_posts/${category}/${fileName}`;
-      const frontMatter =
-        `---\n` +
-        `title: "${title}"\n` +
-        `date: ${date}\n` +
-        `category: ${category}\n` +
-        `tags: [${tags.join(", ")}]\n` +
-        `layout: post\n` +
-        `---\n\n`;
-
-      const content = btoa(unescape(encodeURIComponent(frontMatter + body)));
-
-      const res = await fetch(`https://api.github.com/repos/seority/seority.github.io/contents/${path}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: "블로그 글 작성",
-          content,
-          branch: "main"
-        })
+      editor = new toastui.Editor({
+        el: $("#editor")[0],
+        height: '500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        placeholder: '내용을 입력하세요...'
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("✅ 글 작성 완료!");
-      } else {
-        alert("❌ 오류: " + data.message);
-        console.error(data);
-      }
+      // ✅ 초기 하이라이트 적용
+      setTimeout(() => hljs.highlightAll(), 100);
+
+      $("#login").on("click", async function () {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const token = result.credential.accessToken;
+          localStorage.setItem("github_token", token);
+          alert(`${result.user.displayName}님 로그인 성공!`);
+        } catch (err) {
+          alert("❌ 로그인 실패: " + err.message);
+        }
+      });
+
+      $("#submit").on("click", async function () {
+        const title = $("#title").val().trim();
+        const date = $("#date").val();
+        const category = $("#category").val();
+        const tags = $("#tags").val().split(',').map(tag => tag.trim()).filter(tag => tag);
+        const body = editor.getMarkdown();
+        const token = localStorage.getItem("github_token");
+
+        if (!token) return alert("❗ 먼저 로그인해주세요.");
+
+        const fileName = `${category}-${date}-${title.replace(/\s+/g, "-")}.md`;
+        const path = `_posts/${category}/${fileName}`;
+        const markdown = `---\ntitle: "${title}"\ndate: ${date}\ncategory: ${category}\ntags: [${tags.join(", ")}]\nlayout: post\n---\n\n${body}`;
+        const encoded = btoa(unescape(encodeURIComponent(markdown)));
+
+        const res = await fetch(`https://api.github.com/repos/seority/seority.github.io/contents/${path}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: "블로그 글 작성",
+            content: encoded,
+            branch: "main"
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert("✅ 글 작성 완료!");
+        } else {
+          alert("❌ 오류: " + data.message);
+          console.error(data);
+        }
+      });
     });
 
+    // 전역 테마 전환 함수
     window.switchTheme = function (theme) {
       const urls = {
         'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
         'github-dark-dimmed': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css',
         'night-owl': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css'
       };
-      const bg = {
-        'atom-one-dark': '#282c34',
-        'github-dark-dimmed': '#22272e',
-        'night-owl': '#011627'
-      };
-      document.getElementById('highlight-theme').href = urls[theme];
+      $('#highlight-theme').attr('href', urls[theme]);
       setTimeout(() => hljs.highlightAll(), 100);
     };
   </script>
 </body>
 </html>
+
