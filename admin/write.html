@@ -146,7 +146,7 @@
 
         const fileName = `${category}-${date}-${title.replace(/\s+/g, "-")}.md`;
         const path = `_posts/${category}/${fileName}`;
-        const markdown = `---\ntitle: "${title}"\ndate: ${date}\ncategory: ${category}\ntags: [${tags.join(", ")}]\nlayout: post\n---\n\n${body}`;
+        const markdown = `---\ntitle: "${title}"\ndate: ${date}\ncategories: ${category}\ntags: [${tags.join(", ")}]\nlayout: post\n---\n\n${body}`;
         const encoded = btoa(unescape(encodeURIComponent(markdown)));
 
         const res = await fetch(`https://api.github.com/repos/seority/seority.github.io/contents/${path}`, {
