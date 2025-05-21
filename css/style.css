@@ -36,15 +36,15 @@ body {
         flex-direction: column;
     }
 
-    .sidebar {
-        width: 100%;
-        height: auto; /* ← 세로 고정 해제 */
-        flex-direction: row; /* ← 가로 정렬로 전환 */
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        border-right: none;
-        border-bottom: 1px solid #ccc;
+    aside.sidebar {
+        width: 100% !important;
+        height: auto !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 10px 20px !important;
+        border-right: none !important;
+        border-bottom: 1px solid #ccc !important;
     }
 
     .sidebar-image {
