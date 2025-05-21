@@ -1,0 +1,19 @@
+title: Seority 블로그
+description:  블로그
+baseurl: "" # 루트가 아니면 하위 경로 입력
+url: "https://seority.github.io"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+collections:
+  posts:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
