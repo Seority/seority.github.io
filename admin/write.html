@@ -137,6 +137,7 @@
       $("#login").on("click", async function () {
         try {
           const result = await signInWithPopup(auth, provider);
+          console.log(result);
           const credential = GithubAuthProvider.credentialFromResult(result);
           if (!credential) {
             alert("❌ GitHub 인증 실패: credential 없음");
