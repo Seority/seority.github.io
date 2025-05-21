@@ -144,7 +144,7 @@
 
         if (!token) return alert("❗ 먼저 로그인해주세요.");
 
-        const fileName = `${category}-${date}-${title.replace(/\s+/g, "-")}.md`;
+        const fileName = `${date}-${category.toLowerCase()}-${title.replace(/\s+/g, "-").toLowerCase()}.md`;
         const path = `_posts/${category}/${fileName}`;
         const markdown = `---\ntitle: "${title}"\ndate: ${date}\ncategories: ${category}\ntags: [${tags.join(", ")}]\nlayout: post\n---\n\n${body}`;
         const encoded = btoa(unescape(encodeURIComponent(markdown)));
