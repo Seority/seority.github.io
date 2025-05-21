@@ -69,7 +69,7 @@
     <input type="text" id="title" placeholder="제목" />
 
     <h2>내용</h2>
-    <div id="editor"></div>
+    <div id="editor" style="height:500px;"></div>
 
     <h2>작성일</h2>
     <input type="date" id="date" />
@@ -85,11 +85,16 @@
   <!-- Firebase 모듈 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
-    import { getAuth, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+    import {
+      getAuth,
+      GithubAuthProvider,
+      signInWithPopup,
+      getRedirectResult
+    } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyADzni3RHctYp3juQqOczd05i5tti9ehMY",
-      authDomain: "seority.github.io", // ✅ 팝업 인증용 도메인 (GitHub Pages)
+      authDomain: "seority.github.io", // ✅ 핵심: GitHub Pages에서 인증되게 지정
       projectId: "seority-cms",
       storageBucket: "seority-cms.firebasestorage.app",
       messagingSenderId: "821461314543",
@@ -101,6 +106,17 @@
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
 
+    // 혹시 redirect fallback으로 들어온 경우 처리 방지
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          console.warn("⚠️ redirect 인증 fallback 발생 — 무시 처리 중");
+        }
+      })
+      .catch((error) => {
+        console.warn("⚠️ redirect fallback 에러 무시", error);
+      });
+
     let editor;
 
     $(document).ready(function () {
@@ -108,23 +124,22 @@
       $("#date").val(today);
 
       editor = new toastui.Editor({
-        el: $("#editor")[0],
-        height: '500px',
-        initialEditType: 'markdown',
-        previewStyle: 'vertical',
-        placeholder: '내용을 입력하세요...'
+        el: document.querySelector("#editor"),
+        height: "500px",
+        initialEditType: "markdown",
+        previewStyle: "vertical",
+        placeholder: "내용을 입력하세요..."
       });
 
-      editor.on('change', () => hljs.highlightAll());
+      editor.on("change", () => hljs.highlightAll());
 
-      // GitHub 로그인 (팝업 방식)
+      // 로그인 처리
       $("#login").on("click", async function () {
         try {
           const result = await signInWithPopup(auth, provider);
           const credential = GithubAuthProvider.credentialFromResult(result);
-
           if (!credential) {
-            alert("❌ 인증 토큰을 가져올 수 없습니다.");
+            alert("❌ GitHub 인증 실패: credential 없음");
             return;
           }
 
@@ -133,8 +148,8 @@
           localStorage.setItem("github_token", token);
           alert(`${user.displayName}님 로그인 성공!`);
         } catch (err) {
+          console.error("❌ 로그인 에러", err);
           alert("❌ 로그인 실패: " + err.message);
-          console.error(err);
         }
       });
 
@@ -145,7 +160,7 @@
         const body = editor.getMarkdown();
         const token = localStorage.getItem("github_token");
 
-        if (!token) return alert("로그인이 필요합니다.");
+        if (!token) return alert("❗ 먼저 로그인해주세요.");
 
         const fileName = `${date}-${title.replace(/\s+/g, "-")}.md`;
         const markdown = `---\ntitle: "${title}"\ndate: ${date}\n---\n\n${body}`;
@@ -174,7 +189,7 @@
       });
     });
 
-    // 전역 테마 전환
+    // 전역 함수 등록
     window.switchTheme = function (theme) {
       const urls = {
         'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
@@ -186,7 +201,6 @@
         'github-dark-dimmed': '#22272e',
         'night-owl': '#011627'
       };
-
       $("#highlight-theme").attr("href", urls[theme]);
       $(".toastui-editor-contents pre code.hljs").css("background-color", bg[theme]);
       setTimeout(() => hljs.highlightAll(), 100);
