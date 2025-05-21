@@ -54,16 +54,24 @@ body {
     .sidebar-image img {
         max-width: 60px;
     }
-
+    
     .category-list {
         display: flex;
         flex-direction: row;
         gap: 15px;
         justify-content: flex-end;
+        align-items: center;
+        margin: 0;
     }
 
     .category-item {
         margin: 0;
+    }
+
+    .category-list h3 {
+        margin: 0 10px 0 0;
+        font-size: 14px;
+        white-space: nowrap;
     }
 }
 
