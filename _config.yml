@@ -17,3 +17,13 @@ defaults:
       type: "posts"
     values:
       layout: "post"
+
+plugins:
+  - jekyll-paginate-v2
+
+pagination:
+  enabled: true
+  per_page: 5
+  title: ':title - page :num'
+  sort_field: 'date'
+  sort_reverse: true
