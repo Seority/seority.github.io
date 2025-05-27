@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seority CMS - 글쓰기</title>
+
+  <!-- Toast UI Editor CSS -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+  <!-- highlight.js 테마 -->
+  <link id="highlight-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+  <!-- highlight.js + jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f4f4; }
+    .container { max-width: 960px; margin: auto; padding: 20px; }
+    input, select, button {
+      width: 100%; padding: 12px; margin-top: 10px;
+      font-size: 16px; border-radius: 6px; border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #24292e; color: white; font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background-color: #444; }
+
+    .toastui-editor-contents pre code.hljs {
+      background-color: #282c34 !important;
+      color: #abb2bf !important;
+      font-family: Consolas, Monaco, monospace !important;
+      font-size: 0.95em !important;
+      line-height: 1.5 !important;
+      border-radius: 4px;
+      padding: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button id="login">🔐 GitHub 로그인</button>
+
+    <h2>제목</h2>
+    <input type="text" id="title" placeholder="제목을 입력하세요" />
+
+    <h2>작성일</h2>
+    <input type="date" id="date" />
+
+    <h2>카테고리</h2>
+    <select id="category">
+      <option value="php">PHP</option>
+      <option value="mysql">MySQL</option>
+      <option value="python">Python</option>
+      <option value="swift">Swift</option>
+      <option value="kotlin">Kotlin</option>
+      <option value="java">Java</option>
+      <option value="html_js">HTML/JS</option>
+      <option value="etc">기타</option>
+    </select>
+
+    <h2>태그 (콤마로 구분)</h2>
+    <input type="text" id="tags" placeholder="예: swift, algorithm, sort" />
+
+    <h2>내용</h2>
+    <div id="editor" style="height: 500px;"></div>
+
+    <h3>💡 하이라이트 테마 변경</h3>
+    <button onclick="switchTheme('atom-one-dark')">Atom One Dark</button>
+    <button onclick="switchTheme('github-dark-dimmed')">GitHub Dark Dimmed</button>
+    <button onclick="switchTheme('night-owl')">Night Owl</button>
+
+    <button id="submit">📤 작성하기</button>
+  </div>
+
+  <!-- Firebase SDK via Module -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyADzni3RHctYp3juQqOczd05i5tti9ehMY",
+      authDomain: "seority-cms.firebaseapp.com",
+      projectId: "seority-cms",
+      storageBucket: "seority-cms.firebasestorage.app",
+      messagingSenderId: "821461314543",
+      appId: "1:821461314543:web:98b6730dce8f025181241a",
+      measurementId: "G-LVF6ZYMCZQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GithubAuthProvider();
+    provider.addScope('repo');
+
+    let editor;
+
+    $(document).ready(function () {
+      const today = new Date().toISOString().split("T")[0];
+      $("#date").val(today);
+
+      editor = new toastui.Editor({
+        el: $("#editor")[0],
+        height: '500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        placeholder: '내용을 입력하세요...'
+      });
+
+      // ✅ 초기 하이라이트 적용
+      setTimeout(() => hljs.highlightAll(), 100);
+
+      $("#login").on("click", async function () {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          console.log("로그인 결과:", result);
+      
+          const credential = GithubAuthProvider.credentialFromResult(result);
+      
+          if (!credential) {
+            alert("❌ GitHub 인증 실패: credential이 없습니다.");
+            return;
+          }
+      
+          const token = credential.accessToken;
+          localStorage.setItem("github_token", token);
+          alert(`${result.user.displayName}님 로그인 성공!`);
+        } catch (err) {
+          console.error("🔥 로그인 실패", err);
+          alert("❌ 로그인 실패: " + err.message);
+        }
+      });
+
+      $("#submit").on("click", async function () {
+        const title = $("#title").val().trim();
+        const date = $("#date").val();
+        const category = $("#category").val();
+        const tags = $("#tags").val().split(',').map(tag => tag.trim()).filter(tag => tag);
+        const body = editor.getMarkdown();
+        const token = localStorage.getItem("github_token");
+
+        if (!token) return alert("❗ 먼저 로그인해주세요.");
+
+        const fileName = `${date}-${category.toLowerCase()}-${title.replace(/\s+/g, "-").toLowerCase()}.md`;
+        const path = `_posts/${category}/${fileName}`;
+        const markdown = `---\ntitle: "${title}"\ndate: ${date}\ncategories: ${category}\ntags: [${tags.join(", ")}]\nlayout: post\n---\n\n${body}`;
+        const encoded = btoa(unescape(encodeURIComponent(markdown)));
+
+        const res = await fetch(`https://api.github.com/repos/seority/seority.github.io/contents/${path}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: "블로그 글 작성",
+            content: encoded,
+            branch: "main"
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert("✅ 글 작성 완료!");
+        } else {
+          alert("❌ 오류: " + data.message);
+          console.error(data);
+        }
+      });
+    });
+
+    // 전역 테마 전환 함수
+    window.switchTheme = function (theme) {
+      const urls = {
+        'atom-one-dark': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css',
+        'github-dark-dimmed': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css',
+        'night-owl': 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css'
+      };
+      $('#highlight-theme').attr('href', urls[theme]);
+      setTimeout(() => hljs.highlightAll(), 100);
+    };
+  </script>
+</body>
+</html>
+
