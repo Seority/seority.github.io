@@ -16,7 +16,7 @@ defaults:
       path: ""
       type: "posts"
     values:
-      layout: "post"
+      layout: "default"
 
 plugins:
   - jekyll-paginate-v2
