@@ -18,8 +18,10 @@ layout: default
     <p>등록된 글이 없습니다.</p>
   {%- endif -%}
 
-  {% for post in posts_in_category %}
-  <p>{{ post.title }}</p>
+<ul>
+  {% for category in site.categories %}
+    <li>{{ category[0] }} ({{ category[1].size }}개)</li>
   {% endfor %}
+</ul>
 
 </div>
