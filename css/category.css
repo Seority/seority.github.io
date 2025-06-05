@@ -9,24 +9,24 @@
 .post-card {
   display: flex;
   align-items: stretch;
-  border: 1px solid #ddd;
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 3px 4px 8px rgba(0, 0, 0, 0.08);
-  background: #fff;
+  box-shadow: 3px 4px 8px var(--shadow-color);
+  background: var(--card-bg);
   margin-bottom: 24px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .post-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 /* 왼쪽 코드 썸네일 영역 */
 .post-thumb {
   width: 160px;
-  background-color: #f4f4f4;
+  background-color: var(--card-border);
   padding: 12px;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.8rem;
@@ -34,14 +34,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--card-border);
 }
 
 .post-thumb pre {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  background-color: #272822;
+  background-color: #272822; /* highlight.js 테마에 맞춤 */
   color: #f8f8f2;
   padding: 10px;
   border-radius: 6px;
@@ -60,7 +60,7 @@
 
 .post-content a {
   text-decoration: none;
-  color: #007acc;
+  color: var(--link-hover-color);
 }
 
 .post-content a:hover {
@@ -68,7 +68,7 @@
 }
 
 .post-content .excerpt {
-  color: #333;
+  color: var(--text-color);
   font-size: 0.95rem;
   margin-bottom: 10px;
 }
@@ -79,14 +79,15 @@
 }
 
 .tag {
-  background-color: #eef;
-  color: #3366cc;
+  background-color: var(--tag-bg);
+  color: var(--tag-text);
   padding: 2px 8px;
   margin-right: 6px;
   border-radius: 4px;
   font-size: 0.75rem;
 }
 
+/* 제목/날짜 정렬 */
 .title-row {
   display: flex;
   justify-content: space-between;
@@ -100,7 +101,7 @@
 }
 
 .title-row .date {
-  color: #888;
+  color: var(--muted-color);
   font-size: 0.85rem;
   white-space: nowrap;
 }
