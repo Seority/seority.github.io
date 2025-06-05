@@ -2,7 +2,8 @@
 layout: default
 ---
 
-{% assign category_name = page.path | split: "/" | last | split: "." | first | downcase %}
+{% assign segments = page.url | split: "/" | reject: "" %}
+{% assign category_name = segments | last | downcase %}
 {% assign posts_in_category = site.categories[category_name] %}
 
 <h1>{{ category_name }} 카테고리</h1>
