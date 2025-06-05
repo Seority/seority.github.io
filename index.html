@@ -4,50 +4,54 @@
     <meta charset="UTF-8">
 <title>Seority 블로그</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="/css/style.css">
 
 <script>
-  const themeToggleBtn = document.getElementById('theme-toggle');
+  $(function () {
+    const $root = $('html');
+    const theme = localStorage.getItem('theme');
 
-  // 초기 상태 감지 (localStorage 또는 prefers-color-scheme)
-  if (localStorage.getItem('theme') === 'dark' ||
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark-mode');
-  }
+    // 초기 테마 적용
+    if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      $root.addClass('dark-mode');
+    }
 
-  // 토글 동작
-  themeToggleBtn?.addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark-mode');
-    const isDark = document.documentElement.classList.contains('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // 토글 클릭 이벤트
+    $('#theme-toggle').on('click', function () {
+      $root.toggleClass('dark-mode');
+      const isDark = $root.hasClass('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
   });
 </script>
+
 
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
-    <div class="sidebar-image">
-        <img src="/assets/images/logo.png" alt="메인 이미지">
-    </div>
-    <button id="theme-toggle" aria-label="다크모드 토글">🌙</button>
-    <nav class="category-list">
-        <h3>카테고리</h3>
-        
-        
-            <div class="category-item">
-                <a href="/categories/kotlin/">kotlin</a>
-            </div>
-        
-            <div class="category-item">
-                <a href="/categories/php/">php</a>
-            </div>
-        
-            <div class="category-item">
-                <a href="/categories/swift/">swift</a>
-            </div>
-        
-    </nav>
+  <button id="theme-toggle" aria-label="다크모드 토글">🌙</button>
+  <div class="sidebar-image">
+    <img src="/assets/images/logo.png" alt="메인 이미지">
+  </div>
+  <nav class="category-list">
+    <h3>카테고리</h3>
+    
+    
+      <div class="category-item">
+        <a href="/categories/kotlin/">kotlin</a>
+      </div>
+    
+      <div class="category-item">
+        <a href="/categories/php/">php</a>
+      </div>
+    
+      <div class="category-item">
+        <a href="/categories/swift/">swift</a>
+      </div>
+    
+  </nav>
 </aside>
 
         <main class="main-content">
