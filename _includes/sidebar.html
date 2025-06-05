@@ -2,6 +2,7 @@
     <div class="sidebar-image">
         <img src="/assets/images/logo.png" alt="메인 이미지">
     </div>
+    <button id="theme-toggle" aria-label="다크모드 토글">🌙</button>
     <nav class="category-list">
         <h3>카테고리</h3>
         {% assign categories = site.posts | map: 'categories' | uniq | sort %}

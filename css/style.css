@@ -122,6 +122,16 @@ body {
   color: var(--link-hover-color);
 }
 
+#theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  margin-bottom: 10px;
+  align-self: flex-end;
+  color: var(--text-color);
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -168,4 +178,26 @@ body {
     margin: 0;
     white-space: nowrap;
   }
+
+  #theme-toggle {
+    margin-left: auto;
+    margin-right: 10px;
+  }
+}
+
+
+.dark-mode {
+  --bg-color: #121212;
+  --text-color: #eee;
+  --muted-color: #aaa;
+  --card-bg: #1e1e1e;
+  --card-border: #333;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --tag-bg: #2a2a40;
+  --tag-text: #b0baff;
+  --sidebar-bg: #1a1a1a;
+  --sidebar-border: #444;
+  --link-color: #ccc;
+  --link-hover-color: #66aaff;
+  --logo-bg: #444;
 }
