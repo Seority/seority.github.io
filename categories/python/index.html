@@ -15,18 +15,34 @@
 <script>
   $(function () {
     const $root = $('html');
-    const theme = localStorage.getItem('theme');
+    const $toggle = $('#theme-toggle');
 
-    // 초기 테마 적용
-    if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      $root.addClass('dark-mode');
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        $root.addClass('dark-mode');
+        $toggle.text('🌞');
+      } else {
+        $root.removeClass('dark-mode');
+        $toggle.text('🌙');
+      }
+      localStorage.setItem('theme', theme);
     }
 
-    // 토글 클릭 이벤트
-    $('#theme-toggle').on('click', function () {
-      $root.toggleClass('dark-mode');
-      const isDark = $root.hasClass('dark-mode');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // 초기 로딩 시
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    // 클릭 시 전환
+    $toggle.on('click', function () {
+      const currentTheme = $root.hasClass('dark-mode') ? 'dark' : 'light';
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(nextTheme);
     });
   });
 </script>
