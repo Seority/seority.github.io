@@ -5,14 +5,18 @@ layout: default
 <div class="main-content">
   <h1>{{ page.title }} 카테고리</h1>
   <div class="post-list">
-    {% assign category_name = page.url | split: "/" | last %}
-    {% assign posts_in_category = site.categories[category_name] %}
-    {% for post in posts_in_category %}
-      <div class="post-card">
-        <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
-        <p class="date">{{ post.date | date: "%Y-%m-%d" }}</p>
-        <p class="excerpt">{{ post.excerpt | strip_html | truncate: 100 }}</p>
-      </div>
-    {% endfor %}
+    {%- assign category_name = page.url | split: "/" | last | split: "." | first -%}
+    {%- assign posts_in_category = site.categories[category_name] -%}
+    {%- if posts_in_category -%}
+      {% for post in posts_in_category %}
+        <div class="post-card">
+          <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+          <p class="date">{{ post.date | date: "%Y-%m-%d" }}</p>
+          <p class="excerpt">{{ post.excerpt | strip_html | truncate: 100 }}</p>
+        </div>
+      {% endfor %}
+    {%- else -%}
+      <p>등록된 글이 없습니다.</p>
+    {%- endif -%}
   </div>
 </div>
