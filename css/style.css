@@ -198,7 +198,7 @@ body {
   --shadow-color: rgba(0, 0, 0, 0.4);
   --tag-bg: #2a2a40;
   --tag-text: #b0baff;
-  --sidebar-bg: #1a1a1a;
+  --sidebar-bg: #1c2333; /* ← 이 색으로 추천 */
   --sidebar-border: #444;
   --link-color: #ccc;
   --link-hover-color: #66aaff;
