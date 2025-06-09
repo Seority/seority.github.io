@@ -5,12 +5,13 @@
 
 .post-meta {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--muted-color);
   margin-bottom: 1rem;
 }
 
 .badge {
-  background: #eee;
+  background: var(--tag-bg);
+  color: var(--tag-text);
   padding: 2px 6px;
   border-radius: 4px;
   margin-right: 4px;
