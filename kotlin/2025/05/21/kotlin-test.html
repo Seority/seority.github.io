@@ -1,4 +1,114 @@
-<p>kotlin test</p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+<title>Seority 블로그</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="/css/style.css">
+
+  <link rel="stylesheet" href="/css/post.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+<script>
+  $(function () {
+    const $root = $('html');
+    const $toggle = $('#theme-toggle');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        $root.addClass('dark-mode');
+        $toggle.text('🌞');
+      } else {
+        $root.removeClass('dark-mode');
+        $toggle.text('🌙');
+      }
+      localStorage.setItem('theme', theme);
+    }
+
+    // 초기 로딩 시
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    // 클릭 시 전환
+    $toggle.on('click', function () {
+      const currentTheme = $root.hasClass('dark-mode') ? 'dark' : 'light';
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(nextTheme);
+    });
+  });
+</script>
+
+
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+  <div class="sidebar-image">
+    <img src="/assets/images/logo.png" alt="메인 이미지">
+    <button id="theme-toggle" aria-label="다크모드 토글">🌙</button>
+  </div>
+
+  <nav class="category-list">
+    <h3>카테고리</h3>
+    
+    
+      <div class="category-item">
+        <a href="/categories/kotlin/">kotlin</a>
+      </div>
+    
+      <div class="category-item">
+        <a href="/categories/php/">php</a>
+      </div>
+    
+      <div class="category-item">
+        <a href="/categories/swift/">swift</a>
+      </div>
+    
+  </nav>
+</aside>
+
+        <main class="main-content">
+            <article class="post">
+
+  <header class="post-header">
+    <h1>test</h1>
+    <p class="post-meta">
+      작성일: 2025-05-21
+      
+        | 카테고리:
+        
+          <span class="badge">kotlin</span>
+        
+      
+      
+        | 태그:
+        
+          <span class="badge">kotlin</span>
+        
+      
+    </p>
+  </header>
+
+  <section class="post-content">
+    <p>kotlin test</p>
 
 <div class="language-kotlin highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="py">i</span> <span class="p">=</span> <span class="mi">2</span><span class="p">;</span>
 </code></pre></div></div>
+
+  </section>
+
+</article>
+
+        </main>
+    </div>
+</body>
+</html>
