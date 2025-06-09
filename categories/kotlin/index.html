@@ -5,17 +5,21 @@
 <title>Seority 블로그</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- 기본 공통 스타일 -->
 <link rel="stylesheet" href="/css/style.css">
 
-
+<!-- 레이아웃별 전용 스타일 -->
 
   <link rel="stylesheet" href="/css/category.css">
 
 
-<!-- 공통 highlight.js 스타일 & 스크립트 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<!-- highlight.js 다크/라이트 테마 전환용 -->
+<link id="hljs-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
+
+<!-- 다크모드 전환 스크립트 + highlight 테마 동기화 -->
 <script>
   $(function () {
     const $root = $('html');
@@ -25,14 +29,15 @@
       if (theme === 'dark') {
         $root.addClass('dark-mode');
         $toggle.text('🌞');
+        $('#hljs-theme').attr('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css');
       } else {
         $root.removeClass('dark-mode');
         $toggle.text('🌙');
+        $('#hljs-theme').attr('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css');
       }
       localStorage.setItem('theme', theme);
     }
 
-    // 초기 로딩 시
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -42,7 +47,6 @@
       applyTheme(prefersDark ? 'dark' : 'light');
     }
 
-    // 클릭 시 전환
     $toggle.on('click', function () {
       const currentTheme = $root.hasClass('dark-mode') ? 'dark' : 'light';
       const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -50,7 +54,6 @@
     });
   });
 </script>
-
 
 </head>
 <body>
