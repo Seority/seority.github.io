@@ -41,8 +41,8 @@
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  background-color: #272822; /* highlight.js 테마에 맞춤 */
-  color: #f8f8f2;
+  background-color: var(--code-bg); /* 💡 변수로 대체 */
+  color: var(--code-text);
   padding: 10px;
   border-radius: 6px;
   width: 100%;

@@ -29,11 +29,11 @@
       if (theme === 'dark') {
         $root.addClass('dark-mode');
         $toggle.text('🌞');
-        $('#hljs-theme').attr('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css');
+        $('#hljs-theme').attr('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css');
       } else {
         $root.removeClass('dark-mode');
         $toggle.text('🌙');
-        $('#hljs-theme').attr('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css');
+        $('#hljs-theme').attr('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css');
       }
       localStorage.setItem('theme', theme);
     }
