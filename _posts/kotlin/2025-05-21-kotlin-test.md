@@ -1,7 +1,7 @@
 ---
 title: "test"
 date: 2025-05-21
-categories: kotlin
+categories: [kotlin]
 tags: [kotlin]
 layout: post
 ---
